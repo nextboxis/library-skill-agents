@@ -1,0 +1,19 @@
+# Universal AI Agent Skills .gitignore
+
+# Rust build artifacts
+target/
+**/*.rs.bk
+*.pdb
+
+# Environment & Temporary
+.venv/
+env/
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+*.log
+tmp/
+scratch/
+.idea/
+.vscode/

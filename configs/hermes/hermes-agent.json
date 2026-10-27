@@ -1,0 +1,14 @@
+{
+  "agent": "Hermes-Universal-AI",
+  "skillsDirectory": "../../skills",
+  "manifest": "../../skills-manifest.json",
+  "capabilities": [
+    "code",
+    "cybersecurity",
+    "engineering-craft",
+    "people-agent",
+    "career",
+    "pptx"
+  ],
+  "defaultRouter": "pptx-router"
+}

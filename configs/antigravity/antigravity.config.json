@@ -1,0 +1,6 @@
+{
+  "skillsRoot": "../../skills",
+  "manifest": "../../skills-manifest.json",
+  "router": "pptx-router",
+  "description": "Google Antigravity configuration for Universal Skills Library"
+}
