@@ -3,23 +3,22 @@ name: blender-3d-automation
 description: Use this skill when creating, modifying, inspecting, lighting, texturing, or rendering 3D scenes in Blender via the native blender-rust-mcp server and Python bpy.
 ---
 
-# Blender 3D Automation & MCP Driver
+# Blender 3D Automation & Rust MCP Driver
 
 ## When to use
 Use this skill whenever:
 - Creating 3D models, primitives, environments, or procedural scenes in Blender.
-- Interacting with an open Blender session in real-time via the live viewport TCP bridge.
-- Generating, checking, and batch-rendering `.blend` files in headless CLI mode (`blender --background`).
+- Executing headless CLI operations (`blender --background`) with sub-millisecond dispatch via `blender-rust-mcp`.
 - Applying PBR materials (Principled BSDF with metallic, roughness, emission, and hex colors).
 - Staging studio/cinematic cameras with automatic `Track To` focus targets and focal lengths.
-- Configuring 3-point, sun, or HDRI lighting with physically based lumen/watt values.
+- Configuring 3-point, sun, or studio lighting with physically based lumen/watt values.
 - Exporting 3D assets to glTF/GLB, FBX, or OBJ for game engines (Godot, Unreal, Unity) or web (Three.js).
+- Batch-rendering `.blend` frames or stills using Cycles or EEVEE Next.
 
 ## Design Principles
 
-1. **Dual-Mode Operation (Live vs. Headless)**:
-   - If the user has Blender open with the Antigravity MCP addon enabled, commands execute immediately in the active 3D Viewport.
-   - If Blender is closed, the bridge automatically spawns `blender.exe --background` to run scripts headlessly without user intervention.
+1. **Pure Native Rust Driver**:
+   - Executes Blender headlessly (`blender.exe --background`), streaming commands directly to standard input/output with zero background daemon and zero open network ports.
 2. **Physically Based Shading (PBR)**:
    - Dielectric materials (plastic, wood, stone, glass) use `metallic: 0.0`.
    - Pure conductors (gold, chrome, copper, aluminum) use `metallic: 1.0`.
@@ -33,16 +32,16 @@ Use this skill whenever:
    - Wide-angle / landscape: `24mm`–`35mm`.
    - Standard / human eye: `50mm`.
    - Portrait / product close-up: `85mm`–`105mm`.
-   - Always track a target empty object (`Camera_Focus_Target`) for clean focal orientation.
+   - Always track a target object or coordinates for clean focal orientation.
 
 ## Step-by-Step Workflow
 
 1. **Verify Connectivity**:
-   - Call `blender_ping` to detect whether live viewport session (port 9876) or headless background CLI mode is active.
+   - Call `blender_ping` to detect active Blender binary and confirm headless runner availability.
 2. **Inspect Active Scene**:
    - Call `blender_get_scene_info` to inspect existing objects, mesh counts, active camera, and render engine.
 3. **Construct Geometry**:
-   - For standard shapes: call `blender_create_primitive` (cube, sphere, cylinder, plane, torus).
+   - For standard shapes: call `blender_create_primitive` (cube, sphere, cylinder, plane, torus, monkey).
    - For procedural geometry or landscape generation: call `blender_execute_bpy` with procedural vertex/modifier logic.
 4. **Apply Shaders & Materials**:
    - Call `blender_apply_material` with target object, hex color, metallic, roughness, and emission.
@@ -110,7 +109,7 @@ Use this skill whenever:
 }
 ```
 
-### 5. Executing Complex Procedural BPY Script
+### 5. Executing Procedural BPY Script
 ```python
 # Calling blender_execute_bpy
 import bpy
@@ -129,12 +128,11 @@ out = {"created_cubes": 8, "radius": 3.0}
 ```
 
 ## Common Mistakes
-- **Assuming Live Mode when Blender is Closed**: Always run `blender_ping` first. If Blender is closed, pass `blend_file` paths so headless mode knows which file to open.
 - **Forgetting Render Engine Nuances**: In Blender 4.x/5.x, EEVEE is updated to `BLENDER_EEVEE_NEXT`. Do not hardcode legacy `BLENDER_EEVEE` options.
 - **Extreme Light Intensities**: Using 1000.0 energy on a `SUN` lamp will completely wash out the scene. Sun energy is irradiance (`5.0`–`10.0`), while Point/Area lamps use luminous flux / Watts (`100`–`2000`).
 
 ## Review Checklist
-- [ ] `blender_ping` confirmed bridge status.
+- [ ] `blender_ping` confirmed runner status.
 - [ ] All 3D coordinates use real-world metric scale.
 - [ ] Materials adhere to PBR metallic (0.0 or 1.0) and roughness bounds.
 - [ ] Camera is aimed at a target and focal length matches composition goals.
@@ -143,4 +141,5 @@ out = {"created_cubes": 8, "radius": 3.0}
 
 ## Related Skills
 - `rust-mcp-toolchain`
-- `design-foundations-visual-hierarchy`
+- `github-rust-mcp`
+- `obsidian-rust-mcp`
